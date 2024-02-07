@@ -7,6 +7,6 @@ module.exports = {
 	async execute(client, interaction) {
 		const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
 		const ping = sent.createdTimestamp - interaction.createdTimestamp;
-		interaction.editReply(`🏓 Pong!\nRoundtrip latency: ${ping}ms`);
+		interaction.editReply(`🏓 Pong!\nRoundtrip latency: ${ping}ms\nWebsocket heartbeat: ${client.ws.ping}ms`);
 	},
 };
