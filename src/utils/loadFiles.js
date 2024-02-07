@@ -8,4 +8,4 @@ module.exports = (directory, callback) => {
     const entity = require(filePath);
     callback(entity, filePath);
   }
-}
+};
