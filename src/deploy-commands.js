@@ -1,20 +1,16 @@
 const { REST, Routes } = require('discord.js');
 require('dotenv').config();
-const fs = require('fs');
 const path = require('path');
+const loadFiles = require('./utils/loadFiles.js');
 
 const commands = [];
-const foldersPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(foldersPath).filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-  const filePath = path.join(foldersPath, file);
-  const command = require(filePath);
-  if ('data' in command && 'execute' in command) {
+loadFiles(path.join(__dirname, 'commands'), (command, filePath) => {
+	if ('data' in command && 'execute' in command) {
     commands.push(command.data.toJSON());
   } else {
     console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
   }
-}
+});
 
 const rest = new REST().setToken(process.env.BOT_TOKEN);
 
