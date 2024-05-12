@@ -50,8 +50,8 @@ module.exports = {
         components: [buttonsRow],
       });
 
-      const hostPromise = awaitPlayerChoice(host, embed, interaction);
-      const opponentPromise = !opponent.bot ? awaitPlayerChoice(opponent, embed, interaction) : getComputerChoice(opponent, embed, interaction);
+      const hostPromise = awaitPlayerChoice(host, response, embed, interaction);
+      const opponentPromise = !opponent.bot ? awaitPlayerChoice(opponent, response, embed, interaction) : getComputerChoice(opponent, embed, interaction);
 
       const results = await Promise.all([hostPromise, opponentPromise]);
       if (!(results[0] && results[1])) return await interaction.followUp({ content: 'Error: Could not get both players\' responses.' });
@@ -70,20 +70,20 @@ module.exports = {
 	},
 };
 
-async function awaitPlayerChoice(player, embed, interaction) {
-  return interaction.channel.awaitMessageComponent({
-      filter: (i) => i.user.id === player.id && i.isButton(),
-      time: TIME_LIMIT
+async function awaitPlayerChoice(player, response, embed, interaction) {
+  return response.awaitMessageComponent({
+    filter: (i) => i.user.id === player.id && i.isButton(),
+    time: TIME_LIMIT
   })
-  .then(i => {
-    embedUpdateDescription(embed.data.description.replace(`${player} 💬`, `${player} ✅`), embed, interaction);
-    return i;
-  })
-  .catch(() => {
-    embedUpdateDescription(`Game over. ${player} did not respond in time.`, embed, interaction);
-    clearButtons(interaction);
-    return null;
-  });
+    .then(i => {
+      embedUpdateDescription(embed.data.description.replace(`${player} 💬`, `${player} ✅`), embed, interaction);
+      return i;
+    })
+    .catch(() => {
+      embedUpdateDescription(`Game over. ${player} did not respond in time.`, embed, interaction);
+      clearButtons(interaction);
+      return null;
+    });
 }
 
 function embedUpdateDescription(newDescription, embed, interaction) {
