@@ -51,21 +51,14 @@ module.exports = {
       });
 
       const hostPromise = awaitPlayerChoice(host, embed, interaction);
-      let opponentPromise;
-      if (!opponent.bot) {
-        opponentPromise = awaitPlayerChoice(opponent, embed, interaction);
-      } else {
-        opponentPromise = getComputerChoice();
-        embed.setDescription(embed.data.description.replace(`${opponent} 💬`, `${opponent} ✅`));
-        interaction.editReply({ embeds: [embed] });
-      }
-
+      const opponentPromise = !opponent.bot ? awaitPlayerChoice(opponent, embed, interaction) : getComputerChoice(opponent, embed, interaction);
       const results = await Promise.all([hostPromise, opponentPromise]);
 
       embed.setDescription(`${host} ✅\n${opponent} ✅`);
       interaction.editReply({ embeds: [embed], components: [] });
 
       if (results[0] && results[1]) {
+        const hostDetails = { player: host, choice: getChoiceObj(results[0].customId) };
         const hostChoice = getChoiceObj(results[0].customId);
         const opponentChoice = !opponent.bot ? getChoiceObj(results[1].customId) : opponentPromise;
         let resultMessage;
@@ -106,7 +99,9 @@ async function awaitPlayerChoice(player, embed, interaction) {
   });
 }
 
-function getComputerChoice() {
+function getComputerChoice(opponent, embed, interaction) {
+  embed.setDescription(embed.data.description.replace(`${opponent} 💬`, `${opponent} ✅`));
+  interaction.editReply({ embeds: [embed] });
   return choices[Math.floor(Math.random() * choices.length)];
 }
 
