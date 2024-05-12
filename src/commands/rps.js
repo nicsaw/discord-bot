@@ -56,14 +56,13 @@ module.exports = {
       const results = await Promise.all([hostPromise, opponentPromise]);
       if (!(results[0] && results[1])) return await interaction.followUp({ content: 'Error: Could not get both players\' responses.' });
 
-      embed.setDescription(`${host} ✅\n${opponent} ✅`);
-      interaction.editReply({ embeds: [embed], components: [] });
+      embedUpdateDescription(`${host} ✅\n${opponent} ✅`, embed, interaction);
+      clearButtons(interaction);
 
       const hostResults = { player: host, choice: getChoiceObj(results[0].customId) };
       const opponentResults = { player: opponent, choice: !opponent.bot ? getChoiceObj(results[1].customId) : opponentPromise };
 
-      embed.setDescription(pickWinner(hostResults, opponentResults));
-      interaction.editReply({ embeds: [embed], components: [] });
+      embedUpdateDescription(pickWinner(hostResults, opponentResults), embed, interaction);
     } catch (error) {
       console.log("Error with /rps");
       console.error(error);
@@ -77,17 +76,23 @@ async function awaitPlayerChoice(player, embed, interaction) {
       time: TIME_LIMIT
   })
   .then(i => {
-    embed.setDescription(embed.data.description.replace(`${player} 💬`, `${player} ✅`));
-    interaction.editReply({ embeds: [embed] });
+    embedUpdateDescription(embed.data.description.replace(`${player} 💬`, `${player} ✅`), embed, interaction);
     return i;
   })
   .catch(() => {
-    const embedGameOver = new EmbedBuilder()
-      .setTitle('Game Over')
-      .setDescription(`${player} did not respond in time.`);
-    interaction.editReply({ embeds: [embedGameOver], components: [] });
+    embedUpdateDescription(`Game over. ${player} did not respond in time.`, embed, interaction);
+    clearButtons(interaction);
     return null;
   });
+}
+
+function embedUpdateDescription(newDescription, embed, interaction) {
+  embed.setDescription(newDescription);
+  interaction.editReply({ embeds: [embed] });
+}
+
+function clearButtons(interaction) {
+  interaction.editReply({ components: [] });
 }
 
 function getComputerChoice(opponent, embed, interaction) {
