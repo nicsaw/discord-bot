@@ -58,18 +58,9 @@ module.exports = {
       interaction.editReply({ embeds: [embed], components: [] });
 
       if (results[0] && results[1]) {
-        const hostDetails = { player: host, choice: getChoiceObj(results[0].customId) };
-        const hostChoice = getChoiceObj(results[0].customId);
-        const opponentChoice = !opponent.bot ? getChoiceObj(results[1].customId) : opponentPromise;
-        let resultMessage;
-        if (hostChoice.beats === opponentChoice.name) {
-          resultMessage = `${hostChoice.emoji} beats ${opponentChoice.emoji} - ${host} wins!`;
-        } else if (opponentChoice.beats === hostChoice.name) {
-          resultMessage = `${opponentChoice.emoji} beats ${hostChoice.emoji} - ${opponent} wins!`;
-        } else {
-          resultMessage = 'It\'s a tie!';
-        }
-        await interaction.followUp({ content: resultMessage });
+        const hostResults = { player: host, choice: getChoiceObj(results[0].customId) };
+        const opponentResults = { player: opponent, choice: !opponent.bot ? getChoiceObj(results[1].customId) : opponentPromise };
+        await interaction.followUp({ content: pickWinner(hostResults, opponentResults) });
       } else {
         await interaction.followUp({ content: 'Error: Could not get both players\' responses.', ephemeral: true });
       }
@@ -107,6 +98,16 @@ function getComputerChoice(opponent, embed, interaction) {
 
 function getChoiceObj(name) {
   return choices.find(choice => choice.name === name);
+}
+
+function pickWinner(host, opponent) {
+  if (host.choice.beats === opponent.choice.name) {
+    return `${host.player} ${host.choice.emoji} beats ${opponent.player} ${opponent.choice.emoji}!`;
+  } else if (opponent.choice.beats === host.choice.name) {
+    return `${opponent.player} ${opponent.choice.emoji} beats ${host.player} ${host.choice.emoji}!`;
+  } else {
+    return `Both players picked ${host.choice.emoji} - it\'s a tie!`;
+  }
 }
 
 function hasWinner(hostScore, opponentScore, winningScore) {
