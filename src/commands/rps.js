@@ -101,10 +101,6 @@ function getComputerChoice(opponent, embed, interaction) {
   return choices[Math.floor(Math.random() * choices.length)];
 }
 
-function getChoiceObj(name) {
-  return choices.find(choice => choice.name === name);
-}
-
 function pickWinner(host, opponent) {
   if (host.choice.beats === opponent.choice.name) {
     return `${host.player} ${host.choice.emoji} beats ${opponent.player} ${opponent.choice.emoji}!`;
@@ -113,6 +109,10 @@ function pickWinner(host, opponent) {
   } else {
     return `Both players picked ${host.choice.emoji} - it\'s a tie!`;
   }
+}
+
+function getChoiceObj(name) {
+  return choices.find(choice => choice.name === name);
 }
 
 function hasWinner(hostScore, opponentScore, winningScore) {
