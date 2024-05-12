@@ -52,8 +52,8 @@ module.exports = {
 
       const hostPromise = awaitPlayerChoice(host, embed, interaction);
       const opponentPromise = !opponent.bot ? awaitPlayerChoice(opponent, embed, interaction) : getComputerChoice(opponent, embed, interaction);
-      const results = await Promise.all([hostPromise, opponentPromise]);
 
+      const results = await Promise.all([hostPromise, opponentPromise]);
       if (!(results[0] && results[1])) return await interaction.followUp({ content: 'Error: Could not get both players\' responses.' });
 
       embed.setDescription(`${host} ✅\n${opponent} ✅`);
@@ -61,7 +61,9 @@ module.exports = {
 
       const hostResults = { player: host, choice: getChoiceObj(results[0].customId) };
       const opponentResults = { player: opponent, choice: !opponent.bot ? getChoiceObj(results[1].customId) : opponentPromise };
-      await interaction.followUp({ content: pickWinner(hostResults, opponentResults) });
+
+      embed.setDescription(pickWinner(hostResults, opponentResults));
+      interaction.editReply({ embeds: [embed], components: [] });
     } catch (error) {
       console.log("Error with /rps");
       console.error(error);
