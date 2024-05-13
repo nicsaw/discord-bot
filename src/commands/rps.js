@@ -48,7 +48,7 @@ module.exports = {
       const buttonsRow = new ActionRowBuilder().addComponents(buttons);
 
       const response = await interaction.reply({
-        content: `**Rock Paper Scissors**\nFirst to ${winningScore} points wins!\n${host} VS ${opponent}`,
+        content: `**Rock Paper Scissors**\nFirst to ${winningScore} point(s) wins!\n${host} VS ${opponent}`,
         embeds: [embed],
         components: [buttonsRow],
       });
@@ -110,8 +110,7 @@ function clearButtons(interaction) {
 }
 
 function getComputerChoice(opponent, embed, interaction) {
-  embed.setDescription(embed.data.description.replace(`${opponent} 💬`, `${opponent} ✅`));
-  interaction.editReply({ embeds: [embed] });
+  embedUpdateDescription(embed.data.description.replace(`${opponent} 💬`, `${opponent} ✅`), embed, interaction);
   return choices[Math.floor(Math.random() * choices.length)];
 }
 
