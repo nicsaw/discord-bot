@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 
-const TIME_LIMIT = 60 * 1000; // 60 Seconds
+const TIME_LIMIT = 2 * 1000; // 60 Seconds
 
 const choices = [
   { name: 'Rock', emoji: '🪨', beats: 'Scissors' },
@@ -59,7 +59,7 @@ module.exports = {
         const opponentPromise = !opponent.bot ? awaitPlayerChoice(opponent, response, embed, interaction) : getComputerChoice(opponent, embed, interaction);
 
         const results = await Promise.all([hostPromise, opponentPromise]);
-        if (!(results[0] && results[1])) return await interaction.followUp({ content: 'Error: Could not get both players\' responses.' });
+        if (!(results[0] && results[1])) return await interaction.followUp({ content: 'Error: Could not get both players\' responses.', ephemeral: true });
 
         // embedUpdateDescription(`${host} ✅\n${opponent} ✅`, embed, interaction);
 
@@ -71,7 +71,7 @@ module.exports = {
       }
 
       clearButtons(interaction);
-      embedUpdateDescription(`${embed.data.description}\n\n${hostInfo.score > opponentInfo.score ? host : opponent} WINS!`, embed, interaction);
+      embedUpdateDescription(`${embed.data.description}\n\n🔥 ${hostInfo.score > opponentInfo.score ? host : opponent} WINS! 🔥`, embed, interaction);
     } catch (error) {
       console.log("Error with /rps");
       console.error(error);
