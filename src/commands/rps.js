@@ -23,7 +23,7 @@ module.exports = {
       const host = interaction.user;
       // Play against bot if opponent is not specified
       const opponent = interaction.options.getUser('opponent') ?? client.user;
-      const winningScore = interaction.options.getInteger('winning_score') ?? 3;
+      const winningScore = interaction.options.getInteger('winning_score') ?? 2;
 
       if (host.id === opponent.id) {
         return interaction.reply({ content: 'You cannot play against yourself.', ephemeral: true });
@@ -44,7 +44,7 @@ module.exports = {
       const buttonsRow = new ActionRowBuilder().addComponents(buttons);
 
       const response = await interaction.reply({
-        content: `**Rock Paper Scissors**\nFirst to ${winningScore} wins!\n${host} VS ${opponent}`,
+        content: `**Rock Paper Scissors**\nFirst to ${winningScore} points wins!\n${host} VS ${opponent}`,
         embeds: [embed],
         components: [buttonsRow],
       });
