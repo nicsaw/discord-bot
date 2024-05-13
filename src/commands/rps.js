@@ -29,6 +29,10 @@ module.exports = {
         return interaction.reply({ content: 'You cannot play against yourself.', ephemeral: true });
       }
 
+      if (winningScore <= 0) {
+        return interaction.reply({ content: 'Winning score must be a positive integer.', ephemeral: true });
+      }
+
       const embed = new EmbedBuilder()
         .setTitle(`0 - 0`)
         .setDescription(`${host} 💬\n${opponent} 💬`);
