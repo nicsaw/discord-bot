@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 
-const TIME_LIMIT = 2 * 1000; // 60 Seconds
+const TIME_LIMIT = 60 * 1000; // 60 Seconds
 
 const choices = [
   { name: 'Rock', emoji: '🪨', beats: 'Scissors' },
@@ -31,7 +31,7 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setTitle(`0 - 0`)
-        .setDescription(` `);
+        .setDescription(`${host} 💬\n${opponent} 💬`);
 
       const buttons = choices.map((choice) => {
         return new ButtonBuilder()
@@ -53,25 +53,21 @@ module.exports = {
       const opponentInfo = { player: opponent, choice: null, score: 0 };
 
       while (!hasWinner(hostInfo.score, opponentInfo.score, winningScore)) {
-        embedUpdateDescription(`${embed.data.description}\n\n${host} 💬\n${opponent} 💬`, embed, interaction);
-
         const hostPromise = awaitPlayerChoice(host, response, embed, interaction);
         const opponentPromise = !opponent.bot ? awaitPlayerChoice(opponent, response, embed, interaction) : getComputerChoice(opponent, embed, interaction);
 
         const results = await Promise.all([hostPromise, opponentPromise]);
         if (!(results[0] && results[1])) return await interaction.followUp({ content: 'Error: Could not get both players\' responses.', ephemeral: true });
 
-        // embedUpdateDescription(`${host} ✅\n${opponent} ✅`, embed, interaction);
-
         hostInfo.choice = getChoiceObj(results[0].customId);
         opponentInfo.choice = !opponent.bot ? getChoiceObj(results[1].customId) : opponentPromise;
 
-        embedUpdateDescription(pickRoundWinner(hostInfo, opponentInfo), embed, interaction);
+        embedUpdateDescription(`${pickRoundWinner(hostInfo, opponentInfo)}\n\n${host} 💬\n${opponent} 💬`, embed, interaction);
         embedUpdateTitle(`${hostInfo.score} - ${opponentInfo.score}`, embed, interaction);
       }
 
       clearButtons(interaction);
-      embedUpdateDescription(`${embed.data.description}\n\n🔥 ${hostInfo.score > opponentInfo.score ? host : opponent} WINS! 🔥`, embed, interaction);
+      embedUpdateDescription(`${embed.data.description.split('\n').filter(line => !line.includes('💬')).join('\n')}\n🔥 ${hostInfo.score > opponentInfo.score ? host : opponent} WINS! 🔥`, embed, interaction);
     } catch (error) {
       console.log("Error with /rps");
       console.error(error);
