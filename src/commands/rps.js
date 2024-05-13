@@ -44,7 +44,7 @@ module.exports = {
       const buttonsRow = new ActionRowBuilder().addComponents(buttons);
 
       const response = await interaction.reply({
-        content: `**Rock Paper Scissors**\n${host} VS ${opponent}`,
+        content: `**Rock Paper Scissors**\nFirst to ${winningScore} wins!\n${host} VS ${opponent}`,
         embeds: [embed],
         components: [buttonsRow],
       });
